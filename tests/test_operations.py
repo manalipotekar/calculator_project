@@ -12,6 +12,6 @@ class TestSubtract:
 
 
 class TestDivide:
-    def test_divide_numbers(self):
+    def test_divide_numbers2(self):
         assert divide(10, 2) == 5
 
