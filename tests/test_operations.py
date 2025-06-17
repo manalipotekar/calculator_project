@@ -3,7 +3,7 @@ from calculator.operations import add, subtract, divide
 
 class TestAdd:
     def test_add_positive_numbers(self):
-        assert add(3, 5) == 7
+        assert add(3, 5) == 8
 
 
 class TestSubtract:
