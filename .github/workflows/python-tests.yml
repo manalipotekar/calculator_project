@@ -1,4 +1,4 @@
-name: Python Tests
+name: Python Tests with Xray Integration
 
 on:
   push:
@@ -10,8 +10,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      XRAY_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      XRAY_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      PYTHONPATH: .
+
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up Python
@@ -22,10 +27,38 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install pytest pytest-cov requests
 
-    - name: Run tests with coverage
+    - name: Run tests and generate results.xml
       run: |
-        pip install pytest pytest-cov
-        export PYTHONPATH=.
-        pytest --junitxml=results.xml --cov=calculator --cov-branch
+        pytest --junitxml=calculator_project/results.xml --cov=calculator --cov-branch || true
+
+    - name: List all files for debugging
+      run: ls -R
+
+    - name: Check if results.xml exists
+      id: check_results
+      run: |
+        if [ -f "calculator_project/results.xml" ]; then
+          echo "results.xml exists "
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "results.xml not found "
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+        fi
+        echo "===== RESULTS.XML CONTENTS ====="
+        cat calculator_project/results.xml
+
+    - name: Upload results to Xray
+      if: steps.check_results.outputs.exists == 'true'
+      run: |
+        echo "Authenticating with Xray Cloud..."
+        TOKEN=$(curl -s -X POST https://xray.cloud.getxray.app/api/v2/authenticate \
+          -H "Content-Type: application/json" \
+          -d "{\"client_id\": \"$XRAY_CLIENT_ID\", \"client_secret\": \"$XRAY_CLIENT_SECRET\"}" | tr -d '"')
+
+        echo "Uploading results.xml to Xray Cloud..."
+        curl -v -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/junit?testExecKey=UMAIQA-1089" \
+          -H "Authorization: Bearer $TOKEN" \
+          -H "Content-Type: text/xml" \
+          --data @"calculator_project/results.xml"

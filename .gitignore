@@ -1,3 +1,5 @@
 .venv/
 .coverage
 results.xml
+coverage.xml
+coverage.json
