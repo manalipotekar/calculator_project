@@ -13,6 +13,7 @@ jobs:
     env:
       XRAY_CLIENT_ID: ${{ secrets.CLIENT_ID }}
       XRAY_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      PYTHONPATH: .
 
     steps:
     - name: Checkout code
