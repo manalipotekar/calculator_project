@@ -40,10 +40,10 @@ jobs:
       id: check_results
       run: |
         if [ -f "calculator_project/results.xml" ]; then
-          echo "results.xml exists ✅"
+          echo "results.xml exists "
           echo "exists=true" >> "$GITHUB_OUTPUT"
         else
-          echo "results.xml not found ❌"
+          echo "results.xml not found "
           echo "exists=false" >> "$GITHUB_OUTPUT"
         fi
 
