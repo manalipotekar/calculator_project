@@ -57,8 +57,8 @@ jobs:
           -H "Content-Type: application/json" \
           -d "{\"client_id\": \"$XRAY_CLIENT_ID\", \"client_secret\": \"$XRAY_CLIENT_SECRET\"}" | tr -d '"')
 
-        echo "Uploading results.xml to Xray Cloud (multipart)..."
-        curl -v -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/junit/testExecKey=UMAIQA-1089" \
+        echo "Uploading results.xml to Xray Cloud..."
+        curl -v -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/junit?testExecKey=UMAIQA-1089" \
           -H "Authorization: Bearer $TOKEN" \
           -H "Content-Type: text/xml" \
           --data @"calculator_project/results.xml"
