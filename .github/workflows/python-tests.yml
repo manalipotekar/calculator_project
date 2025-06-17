@@ -60,5 +60,5 @@ jobs:
         echo "Uploading results.xml to Xray Cloud (multipart)..."
         curl -v -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/junit/multipart" \
           -H "Authorization: Bearer $TOKEN" \
-          -F "file=@calculator_project/results.xml" \
+          -F "result=@calculator_project/results.xml" \
           -F "testExecKey=UMAIQA-1089"
