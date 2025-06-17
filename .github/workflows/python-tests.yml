@@ -29,11 +29,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pytest-cov requests
 
-    - name: Run unit tests and generate JUnit XML + coverage report
+    - name: Run tests and generate results.xml
       run: |
-        pytest --junitxml=./results.xml --cov=calculator --cov-branch
+        pytest --junitxml=calculator_project/results.xml --cov=calculator --cov-branch
 
-    - name: Authenticate and upload results to Xray (Test Execution UMAIQA-1089)
+    - name: Upload results to Xray
       run: |
         echo "Authenticating with Xray Cloud..."
         TOKEN=$(curl -s -X POST https://xray.cloud.getxray.app/api/v2/authenticate \
@@ -44,4 +44,4 @@ jobs:
         curl -s -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/junit?testExecKey=UMAIQA-1089" \
           -H "Content-Type: multipart/form-data" \
           -H "Authorization: Bearer $TOKEN" \
-          -F "file=@./results.xml"
+          -F "file=@calculator_project/results.xml"
