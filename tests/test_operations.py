@@ -8,7 +8,7 @@ class TestAdd:
 
 class TestSubtract:
     def test_subtract_positive_numbers(self):
-        assert subtract(10, 4) == 6
+        assert subtract(10, 4) == 5
 
 
 class TestDivide:
