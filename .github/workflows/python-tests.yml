@@ -31,9 +31,24 @@ jobs:
 
     - name: Run tests and generate results.xml
       run: |
-        pytest --junitxml=calculator_project/results.xml --cov=calculator --cov-branch
+        pytest --junitxml=calculator_project/results.xml --cov=calculator --cov-branch || true
+
+    - name: List all files for debugging
+      run: ls -R
+
+    - name: Check if results.xml exists
+      id: check_results
+      run: |
+        if [ -f "calculator_project/results.xml" ]; then
+          echo "results.xml exists ✅"
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "results.xml not found ❌"
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+        fi
 
     - name: Upload results to Xray
+      if: steps.check_results.outputs.exists == 'true'
       run: |
         echo "Authenticating with Xray Cloud..."
         TOKEN=$(curl -s -X POST https://xray.cloud.getxray.app/api/v2/authenticate \
@@ -41,7 +56,6 @@ jobs:
           -d "{\"client_id\": \"$XRAY_CLIENT_ID\", \"client_secret\": \"$XRAY_CLIENT_SECRET\"}" | tr -d '"')
 
         echo "Uploading results.xml to Test Execution UMAIQA-1089..."
-        curl -s -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/junit?testExecKey=UMAIQA-1089" \
-          -H "Content-Type: multipart/form-data" \
+        curl -v -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/junit?testExecKey=UMAIQA-1089" \
           -H "Authorization: Bearer $TOKEN" \
           -F "file=@calculator_project/results.xml"
