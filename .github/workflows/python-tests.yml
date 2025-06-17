@@ -46,6 +46,8 @@ jobs:
           echo "results.xml not found "
           echo "exists=false" >> "$GITHUB_OUTPUT"
         fi
+        echo "===== RESULTS.XML CONTENTS ====="
+        cat calculator_project/results.xml
 
     - name: Upload results to Xray
       if: steps.check_results.outputs.exists == 'true'
